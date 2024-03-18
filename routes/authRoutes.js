@@ -186,7 +186,7 @@ router.post('/logout', asyncMiddleware(async (req, res) => {
 }));
 
 
-// Fetch User Profile the database, if authenticated
+// Fetch User Profile from the database, if authenticated
 router.get('/dashboard', passport.authenticate('jwt', { session: false }), asyncMiddleware(async (req, res) => {
   // console.log("Dashboard route accessed");
   try {
@@ -202,7 +202,6 @@ router.get('/dashboard', passport.authenticate('jwt', { session: false }), async
           lastName: user.lastName
         }
       });
-      // console.log("User profile data sent:", user); 
     } else {
       sendResponse(res, 404, { message: "User not found" });
     }

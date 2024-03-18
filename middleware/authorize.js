@@ -34,11 +34,9 @@ const authorize = (allowedRoles) => {
         return next();
       }
 
-      // console.warn(`Unauthorized access attempt by user ${id}`);
       res.status(403).json({ message: 'Access forbidden: You do not have permission' });
 
     } catch (error) {
-      // console.error(`Error during authorization: ${error}`);
       res.status(500).json({ message: 'Internal Server Error' });
     }
   };

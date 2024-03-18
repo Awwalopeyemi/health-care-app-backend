@@ -89,9 +89,6 @@ router.get('/:id', authenticateJWT, authorize(['Admin', 'Doctor', 'Patient']), a
 
 // Update a patient by ID (Authenticate and Authorize as Admin or Doctor)
 router.put('/:id', authenticateJWT, authorize(['Patient','Admin', 'Doctor']), [...updateUserValidation, ...patientValidationForUpdate], asyncMiddleware(async (req, res) => {
-    // console.log("Received ID from Frontend:", req.params.id);
-    // console.log("User ID from token:", req.user.id);
-    // console.log("User ID from request:", req.params.id);
 
   const errors = validationResult(req);
     if (!errors.isEmpty()) {

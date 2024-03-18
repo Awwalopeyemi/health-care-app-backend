@@ -51,7 +51,6 @@ async function isDoctorAvailable(doctorId, desiredTime) {
     logFunctionTrace("isDoctorAvailable", "Function called");
     
     const doctor = await Doctor.findById(doctorId);
-    // console.log("Fetched Doctor Details:", doctor);
 
     if (!doctor) {
       throw new Error('Doctor not found');
@@ -61,14 +60,10 @@ async function isDoctorAvailable(doctorId, desiredTime) {
     const saTime = moment.utc(desiredTime).tz('Africa/Johannesburg');
     const desiredDay = saTime.format('dddd');  // This should return 'Wednesday' for example
 
-    // console.log("Desired Day:", desiredDay);
-    // console.log("Desired Time UTC:", desiredTime.toISOString());
-
     const dayAvailability = doctor.availability.find(day => day.day === desiredDay);
     console.log("Day availability:", JSON.stringify(dayAvailability));
 
     if (!dayAvailability) {
-      // console.log("No availability found for the desired day:", desiredDay);
       return false;
     }
 
@@ -77,15 +72,11 @@ async function isDoctorAvailable(doctorId, desiredTime) {
       const slotStartDate = new Date(`${desiredTime.toISOString().split('T')[0]}T${slot.start}:00Z`).getTime(); 
       const slotEndDate = new Date(`${desiredTime.toISOString().split('T')[0]}T${slot.end}:00Z`).getTime();
       const desiredTimeValue = desiredTime.getTime();
-
-      // console.log("Slot Start Date:", slotStartDate);
-      // console.log("Slot End Date:", slotEndDate);
           
       return (desiredTimeValue >= slotStartDate && desiredTimeValue < slotEndDate);
     });
 
     if (!isTimeAvailable) {
-      // logFunctionTrace("isDoctorAvailable", "Time Slot Not Available!");
       return false;
     }
 
@@ -98,7 +89,6 @@ async function isDoctorAvailable(doctorId, desiredTime) {
     });
 
     if(existingAppointment) {
-        // console.log("Existing appointment found:", existingAppointment);
     }
 
     return !existingAppointment;
@@ -218,6 +208,27 @@ router.get('/:id/myAppointments', authenticateJWT, authorize(['Patient']), async
 
     if (!appointments.length) {
       return res.status(404).json({ message: 'No appointments for this patient found' });
+    }
+    res.status(200).json(appointments);
+  } catch (error) {
+    const { message, status } = handleMongoError(error);
+    res.status(status).json({ message });
+  }
+}));
+
+// Get all appointments by doctor or patient ID (Authenticate and Authorize as Admin)
+router.get('/byUser/:userId', authenticateJWT, authorize(['Admin']), asyncMiddleware(async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const appointments = await Appointment.find({
+      $or: [{ doctorId: userId }, { patientId: userId }]
+    })
+    .populate('doctorId')
+    .populate('patientId')
+    .populate('admin');
+
+    if (!appointments.length) {
+      return res.status(404).json({ message: 'No appointments found for this user' });
     }
     res.status(200).json(appointments);
   } catch (error) {
