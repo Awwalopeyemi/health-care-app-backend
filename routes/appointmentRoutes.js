@@ -133,7 +133,7 @@ router.post('/book', authenticateJWT, authorize(['Patient', 'Doctor', 'Admin']),
 
   // If the user is an admin, set the virtual field `isAdmin` to true
   if (req.user.role === 'Admin') {
-      appointment.isAdmin = true;
+      appointment.admin = true;
   }
 
   try {
@@ -189,14 +189,18 @@ router.post('/book', authenticateJWT, authorize(['Patient', 'Doctor', 'Admin']),
 // Get all appointments (Authenticate and Authorize as Admin or Doctor)
 router.get('/:id', authenticateJWT, authorize(['Admin', 'Doctor']), asyncMiddleware(async (req, res) => {
   try {
-    const appointment = await Appointment.findById(req.params.id)
+    const userId = req.user.id;
+    const appointments = await Appointment.find({ doctorId: userId })
                                          .populate('doctorId')
                                          .populate('patientId')
                                          .populate('admin');
-    if (!appointment) {
+
+    console.log("Fetched Appointments:", appointments);
+    
+    if (!appointments) {
       return res.status(404).json({ message: 'Appointment not found' });
     }
-    res.status(200).json(appointment);
+    res.status(200).json(appointments);
   } catch (error) {
     const { message, status } = handleMongoError(error);
     res.status(status).json({ message });

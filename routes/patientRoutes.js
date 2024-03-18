@@ -2,6 +2,8 @@
 const express = require('express');
 const router = express.Router();
 const Patient = require('../models/Patient');
+const Doctor = require('../models/Doctor');
+const Admin = require('../models/Admin');
 const mongoose = require('mongoose');
 const { check, validationResult } = require('express-validator');
 const authenticateJWT = require('../middleware/authenticateJWT');

@@ -28,11 +28,20 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Add Middleware
+const allowedOrigins = ['http://localhost:3000', process.env.FRONTEND_URL];
+
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000', // Fallback to localhost if not set
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   optionsSuccessStatus: 200
 };
+
 
 // Trust the proxy to get the real client IP
 app.set('trust proxy', 1);

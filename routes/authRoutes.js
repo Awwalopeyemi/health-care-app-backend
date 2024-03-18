@@ -59,7 +59,7 @@ router.post('/register', userValidation, asyncMiddleware(async (req, res) => {
     // Save the new user
     await newUser.save();
 
-    // Create a new Doctor or Patient or Admin
+    // Create a new Doctor or Patient or Admin model based on the role
     if (role === 'Doctor') {
       const newDoctor = new Doctor({
         _id: newUser._id,

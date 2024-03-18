@@ -7,6 +7,7 @@ const { check, validationResult } = require('express-validator');
 const authenticateJWT = require('../middleware/authenticateJWT');
 const authorize = require('../middleware/authorize');
 const Patient = require('../models/Patient');
+const Admin = require("../models/Admin");
 const { userValidation } = require('../shared/userValidations');
 const { updateUserValidation } = require('../shared/updateUserValidations');
 const handleMongoError = require('../shared/handleMongoError');
@@ -66,6 +67,16 @@ router.post('/', authenticateJWT, authorize(['Admin']), [...userValidation, ...d
   
   try {
     const savedDoctor = await doctor.save();
+
+    // Add the doctor to the managedDoctors array of the Admin
+    const admin = await Admin.findById(req.user._id);
+
+    // If the admin is not found, the doctor is saved without being added to the managedDoctors array
+    if (admin) {
+      admin.managedDoctors.push(savedDoctor._id);
+      await admin.save();
+    }
+
     res.status(201).json(savedDoctor);
   } catch (error) {
     const { message, status } = handleMongoError(error);

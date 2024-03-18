@@ -16,7 +16,7 @@
     "maxConcurrency": 1
   },
   "keywords": [],
-  "author": "",
+  "author": "Arnold Twala",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",

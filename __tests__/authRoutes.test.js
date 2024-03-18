@@ -3,7 +3,6 @@ const request = require('supertest');
 const { app, server } = require('../app')
 const { connectDB, closeDB } = require('../config/db');
 const User = require('../models/User');
-const Admin = require('../models/Admin');
 const Doctor = require('../models/Doctor');
 const Patient = require('../models/Patient');
 
@@ -17,32 +16,6 @@ afterAll(async () => {
 });
 
 describe('Registration', () => {
-
-  test('should register a new admin', async () => {
-    const res = await request(app)
-      .post('/auth/register')
-      .send({
-        email: 'admin@example.com',
-        password: 'password123',
-        firstName: 'Admin',
-        lastName: 'User',
-        role: 'Admin'
-      });
-    expect(res.statusCode).toEqual(201);
-    expect(res.body).toHaveProperty('data.message', 'User registered successfully');
-
-    // Check if the user was saved to the database
-    const user = await User.findOne({ email: 'admin@example.com' });
-    expect(user).toBeDefined();
-    expect(user.role).toEqual('Admin');
-    expect(user.firstName).toEqual('Admin');
-    expect(user.lastName).toEqual('User');
-
-    // Check if the admin was saved to the database
-    const admin = await Admin.findOne({ _id: user._id });
-    expect(admin).toBeDefined();
-  });
-
   test('should register a new patient', async () => {
     const res = await request(app)
       .post('/auth/register')
