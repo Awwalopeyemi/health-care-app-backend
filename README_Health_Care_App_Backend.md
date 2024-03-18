@@ -64,6 +64,13 @@ Run the server and use the provided API endpoints to manage users, patients, and
 #### Notification Routes
 - GET, PUT `/notifications` - Fetch and update notifications.
 
+#### Admin login
+- to login as admin use the following credentials:
+  - email: admin@example.com
+   - password: admin123y8wstJWPg5Tfh3W
+
+- or seed admin data using seedDatabase.js file
+
 ## Testing
 
 Run the automated tests using the command:
