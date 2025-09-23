@@ -15,6 +15,10 @@ const adminRoutes = require('./routes/adminRoutes');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const dbConnectionCheck = require('./config/dbConnectionCheck');
+const sosRoutes = require('./routes/sos');
+app.use('/api', sosRoutes);
+app.use('/api/sos', require('./routes/sos'));
+app.use('/api/sos', require('./routes/sos'));
 
 require('./config/passport');
 

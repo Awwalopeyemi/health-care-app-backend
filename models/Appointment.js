@@ -29,6 +29,12 @@ const appointmentSchema = new mongoose.Schema({
     enum: ['Scheduled', 'Completed', 'Cancelled'],
     default: 'Scheduled'
   },
+
+  isSynced: {
+  type: Boolean,
+  default: false,
+},
+
   notes: String
 }, { timestamps: true });
 

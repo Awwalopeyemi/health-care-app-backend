@@ -106,6 +106,34 @@ router.post('/book', authenticateJWT, authorize(['Patient', 'Doctor', 'Admin']),
     return res.status(400).json({ errors: errors.array() });
   }
 
+// Sync offline appointments
+router.post('/sync', async (req, res) => {
+  try {
+    const { appointments } = req.body;
+
+    if (!Array.isArray(appointments) || appointments.length === 0) {
+      return res.status(400).json({ error: 'No appointments to sync' });
+    }
+
+    const savedAppointments = await Appointment.insertMany(
+      appointments.map((appt) => ({
+        doctorId: appt.doctorId,
+        patientId: appt.patientId,
+        appointmentDate: appt.appointmentDate,
+        reason: appt.reason || '',
+        isSynced: true,
+        createdAt: appt.createdAt || new Date(),
+      }))
+    );
+
+    res.status(201).json({ message: 'Appointments synced', savedAppointments });
+  } catch (error) {
+    console.error('Appointment Sync Error:', error.message);
+    res.status(500).json({ error: 'Failed to sync appointments' });
+  }
+});
+
+
   // Check if the doctor is available at the desired time
   const isAvailable = await isDoctorAvailable(req.body.doctorId, new Date(req.body.scheduledTime));
   if (!isAvailable) {
